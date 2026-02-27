@@ -3,7 +3,31 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\AuthController;
+
+Route::post('/test-register', function(Request $request) {
+    return response()->json([
+        'received' => $request->all(),
+        'message' => 'Test route working'
+    ]);
+});
+// Move API routes here temporarily
+Route::post('/api/register', [AuthController::class, 'register']);
+Route::post('/api/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/api/logout', [AuthController::class, 'logout']);
+    Route::apiResource('/api/tasks', TaskController::class);
+    Route::get('/api/stats', [TaskController::class, 'stats']);
+});
+
+Route::get('/{any?}', function () {
+    return view('app');
+})->where('any', '.*');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
